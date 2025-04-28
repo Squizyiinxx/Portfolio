@@ -12,7 +12,6 @@ import { PerformanceTier } from "@/types/interfaceHero";
 import ImageHoverDetector from "./ImageHoverDetector";
 import { CANVAS_SIZE, PERFORMANCE_OPTIONS } from "@/constants/ImageCanvas";
 import { usePanel } from "@/hooks/usePanel";
-import { useRouter } from "next/navigation";
 import { useIdleCallback } from "@/hooks/useIdleCallback";
 import { prefetchProfile, prefetchWork } from "@/lib/prefetch";
 
