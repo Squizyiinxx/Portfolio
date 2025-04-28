@@ -14,6 +14,7 @@ import { CANVAS_SIZE, PERFORMANCE_OPTIONS } from "@/constants/ImageCanvas";
 import { usePanel } from "@/hooks/usePanel";
 import { useRouter } from "next/navigation";
 import { useIdleCallback } from "@/hooks/useIdleCallback";
+import { prefetchProfile, prefetchWork } from "@/lib/prefetch";
 
 const HoverBlurChara = dynamic(() => import("./HoverBlurChara"), {
   ssr: false,
@@ -32,7 +33,6 @@ function EnhancedHeroCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  const router = useRouter();
 
   const isInView = useIntersectionObserver(containerRef, {
     threshold: 0.1,
@@ -52,7 +52,7 @@ function EnhancedHeroCanvas() {
   const { handlers } = usePanel();
 
     useIdleCallback(() => {
-      router.prefetch("/work");
+      prefetchWork();
     }, 2000);
 
   useEffect(() => {
@@ -139,7 +139,10 @@ function EnhancedHeroCanvas() {
             imageRef={imageRef}
             canvasRef={canvasRef}
             onHoverChange={setHovered}
-            onImageClick={handlers.showProfile}
+            onImageClick={() => {
+              handlers.showProfile();
+              prefetchProfile();
+            }}
             canvasSize={CANVAS_SIZE}
             throttleMs={performanceTier === "low" ? 80 : 50}
           />
