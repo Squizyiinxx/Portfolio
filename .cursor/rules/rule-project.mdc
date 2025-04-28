@@ -1,0 +1,118 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: "Selalu terapkan aturan ini dalam situasi apa pun."
+globs:**/*.ts
+  alwaysApply: true
+---
+
+# 📜 PROJECT SPECIFIC RULES — AI Development Guidelines
+
+### I. 🔧 GENERAL PRINCIPLES
+- **Zero Tolerance for Sloppy Code**
+  - Semua kode harus bersih, eksplisit, dan terstruktur. Tidak boleh ada shortcut, kode "sementara", atau komentar seperti `// TODO` atau `// FIX ME` di production branch.
+
+- **Reason-First Coding**
+  - Setiap implementasi harus bisa dijelaskan secara logis. Tidak boleh ada magic number, black box, atau pola tak jelas tanpa justifikasi eksplisit.
+
+- **AI Harus Menjawab Seperti Reviewer Senior**
+  - Jika AI menambahkan kode, ia juga harus mampu menjelaskannya seperti code reviewer senior: _"Kenapa begini? Alternatifnya apa? Kenapa ini yang dipilih?"_
+  :::
+
+  :::tip II. 🧠 ARCHITECTURE & STRUCTURE
+- **Struktur File dan Folder Ketat**
+  - Menggunakan standar Next.js 15 dengan `src/app` directory-based routing.
+  - Setiap fitur modular dan dipisahkan: `features/[feature-name]`, `components`, `lib`, `hooks`, `utils`.
+
+- **Strict Domain Segregation**
+  - Tidak boleh ada _cross-feature access_ tanpa melalui context/service layer.
+  - Gunakan prinsip DDD (Domain-Driven Design) bila masuk akal.
+  :::
+
+  :::tip III. 🧩 NAMING CONVENTIONS
+  - Gunakan **naming kontekstual**:
+
+  ```ts
+  // Salah
+  getData(), handleClick()
+
+  // Benar
+  fetchUserBooks(), handleLoginSubmit()
+  ```
+
+  - File dan folder pakai **kebab-case**, variabel dan fungsi pakai **camelCase**, class pakai **PascalCase**.
+  :::
+
+  :::tip IV. ✅ CODE QUALITY STANDARDS
+- **Linting & Formatting Wajib:**
+  - ESLint + Prettier aktif. Konfigurasi wajib diikuti.
+  - Semua PR harus zero-lint-error.
+
+- **Error Handling Ketat:**
+  - Gunakan pattern `try-catch` atau middleware error boundary.
+  - Jangan biarkan async/await tanpa error handler.
+
+- **TypeScript Wajib Full Coverage:**
+  - Tidak boleh `any`, `@ts-ignore`, atau `// @ts-expect-error` tanpa justifikasi eksplisit.
+  - Gunakan type utility yang tepat (`Pick`, `Omit`, `Partial`, dll).
+  :::
+
+  :::tip V. 💡 AI CONTRIBUTION RULES
+- **AI dilarang membuat hal baru sebelum memahami konteks.**
+  - Jika belum ada dokumentasi eksplisit, AI wajib bertanya sebelum berasumsi.
+  - Semua output AI harus punya reasoning dan fallback strategy.
+
+- **Setiap kode AI harus:**
+  - Mengikuti arsitektur project.
+  - Memakai pattern dan konvensi yang sudah digunakan.
+  - Menambahkan penjelasan (jika relevan) dalam bentuk komentar `/** */`.
+  :::
+
+  :::tip VI. 🔁 REFACTORING & OPTIMIZATION
+- **AI boleh refactor hanya jika:**
+  - Bisa dibuktikan secara logis akan meningkatkan kinerja, keterbacaan, atau maintainability.
+  - Tidak merusak integrasi/kontrak publik dari module tersebut (mis. API schema, props, interface).
+
+- **Refactor harus menyertakan benchmark/logika penguatan:**
+  - Contoh: perbandingan waktu eksekusi, memori, atau alasan modularisasi.
+  :::
+
+  :::tip VII. 🧪 TESTING
+- **Setiap fungsi utility atau service harus dites.**
+  - Minimal unit test (Jest, Testing Library).
+  - Test harus meaningful, bukan sekadar coverage.
+
+- **AI tidak boleh melewatkan test tanpa justifikasi eksplisit.**
+  - Jika tidak memungkinkan membuat test, AI harus menjelaskan alasannya.
+  :::
+
+  :::tip VIII. 🔒 SECURITY & COMPLIANCE
+- Tidak boleh ada:
+  - Hardcoded secret/token.
+  - Data user disimpan tanpa enkripsi/hash.
+  - Logging data sensitif.
+
+- **Midtrans/Supabase/Webhook Integration:**
+  - Semua panggilan API harus memiliki verifikasi signature atau auth.
+  - Pastikan penanganan event bersifat idempotent.
+  :::
+
+  :::tip IX. 📦 DEPLOYMENT & ENVIRONMENT
+- File `.env` harus dijaga ketat.
+- Gunakan `.env.local` untuk dev, `.env.production` untuk production.
+- Pastikan setiap kode bisa jalan dengan mode lokal, staging, dan production tanpa perubahan kode.
+  :::
+
+  :::warning X. 🚨 AI FAILSAFE BEHAVIOR
+- Jika AI ragu:
+  - **"Better ask than guess"**. Jangan improvisasi liar.
+
+- Jika terjadi error atau ketidaksesuaian:
+  - AI harus memulai auto-diagnosis:
+      > "Saya mendeteksi kemungkinan pelanggaran pada aturan X. Berikut analisis dan solusi..."
+  :::
+
+
