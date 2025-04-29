@@ -11,14 +11,17 @@ body {
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
+@media (prefers-reduced-motion: no-preference) {
+  .heading-animate {
+    animation: pulse 2s infinite;
+    text-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
+  }
+}
 
 .page-transition {
   will-change: transform, opacity;
   transform-style: preserve-3d;
   isolation: isolate;
-}
-.will-change-transform {
-  will-change: transform;
 }
 
 body,
@@ -55,6 +58,9 @@ button {
     50% {
       filter: brightness(1.3) drop-shadow(0 0 12px rgba(250, 214, 146, 0.7));
     }
+  }
+  .optimizing-transition {
+    @apply will-change-transform transform-gpu translate-z-0;
   }
 
   .breathing-glow {

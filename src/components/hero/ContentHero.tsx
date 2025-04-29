@@ -3,32 +3,40 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
+// Dynamic import untuk client-side only
 const HeroCanvas = dynamic(() => import("./heroCanvas/HeroCanvas"), {
   ssr: false,
 });
 
 const ContentHero: React.FC = () => {
   const heroRef = useRef<HTMLDivElement | null>(null);
-  const [showCanvas, setShowCanvas] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
-    if (!heroRef.current) return;
+    const el = heroRef.current;
+    if (!el) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setShowCanvas(true);
+          const timer = setTimeout(() => {
+            setShouldRender(true);
+          }, 600); 
           observer.disconnect();
+
+          return () => clearTimeout(timer);
         }
       },
       { threshold: 0.2 }
     );
-    observer.observe(heroRef.current);
+
+    observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
   return (
     <div ref={heroRef} className="w-full relative">
-      {showCanvas && (
+      {shouldRender && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

@@ -1,16 +1,16 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 export default function HeroInteractive() {
   return (
-    <motion.div
+    <m.div
       className="absolute top-0 left-0 w-full h-full z-0"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2, ease: "easeInOut" }}
     >
-      <motion.div
+      <m.div
         className="squares"
         initial="hidden"
         animate="visible"
@@ -27,7 +27,7 @@ export default function HeroInteractive() {
         {[...Array(10)].map((_, i) => (
           <div key={i} className="square" aria-hidden="true" />
         ))}
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   );
 }

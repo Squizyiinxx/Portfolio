@@ -4,6 +4,7 @@ import {
   Container,
   Head,
   Heading,
+  Hr,
   Html,
   Img,
   Preview,
@@ -37,7 +38,10 @@ export const YelpRecentLoginEmail = ({
         <Preview>Form Contact</Preview>
         <Container>
           <Section style={logo}>
-            <Img src={`${process.env.NEXT_PUBLIC_BASE_URL}/email/logo.webp`} alt="Squizyiinxx logo" />
+            <Img
+              src={`${process.env.NEXT_PUBLIC_BASE_URL}/logo.webp`}
+              alt="Squizyiinxx logo"
+            />
           </Section>
 
           <Section style={content}>
@@ -64,7 +68,7 @@ export const YelpRecentLoginEmail = ({
                 <Heading
                   as="h2"
                   style={{
-                    fontSize: 26,
+                    fontSize: 22,
                     fontWeight: "bold",
                     textAlign: "center",
                   }}
@@ -94,7 +98,8 @@ export const YelpRecentLoginEmail = ({
                   *Approximate geographic location based on IP address:
                   {ip}
                 </Text>
-
+                <Text style={paragraph}>Message: </Text>
+                <Hr style={hr} />
                 <Text style={paragraph}>{message}</Text>
               </Column>
             </Row>
@@ -108,7 +113,7 @@ export const YelpRecentLoginEmail = ({
             }}
           >
             {new Date().getFullYear()} | Squizyiinxx Inc., Jl. Pandeglang,
-            Serang, Banten, Indonesia | https://squizyiinxx.vercel.app/
+            Serang, Banten, Indonesia | www.squizyiinxx.vercel.app
           </Text>
         </Container>
       </Body>
@@ -122,6 +127,11 @@ const main = {
   backgroundColor: "#fff",
   fontFamily:
     '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+};
+const hr = {
+  borderColor: "#e6ebf1",
+  margin: "20px 0",
+  width: "100%",
 };
 
 const paragraph = {
@@ -148,4 +158,3 @@ const image = {
 const boxInfos = {
   padding: "20px",
 };
-

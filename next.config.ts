@@ -1,5 +1,3 @@
-import { optimizeImage } from "next/dist/server/image-optimizer";
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -27,8 +25,6 @@ const nextConfig = {
       "@emotion/styled",
       "@emotion/react",
     ],
-    FontFace: true,
-    optimizeImage: true,
   },
   eslint: {
     ignoreDuringBuilds: true,

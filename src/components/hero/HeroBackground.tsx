@@ -20,8 +20,6 @@ export default function HeroBackground() {
         className="object-cover"
         sizes="100vw"
         quality={85}
-        fetchPriority="high"
-        decoding="async"
         placeholder="blur"
         blurDataURL={blurhashPlaceholder}
         style={{

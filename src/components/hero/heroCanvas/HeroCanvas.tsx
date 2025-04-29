@@ -1,19 +1,16 @@
-// EnhancedHeroCanvas.tsx
-
 "use client";
 
-import { useRef, useState, useEffect, useMemo, memo } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import dynamic from "next/dynamic";
 import MotionImage from "./MotionImage";
 import useIntersectionObserver from "@/hooks/useIntersectionObserver";
 import useDeviceCapabilities from "@/hooks/useDeviceCapabilities";
-import { PerformanceTier } from "@/types/interfaceHero";
 import ImageHoverDetector from "./ImageHoverDetector";
+import { PerformanceTier } from "@/types/interfaceHero";
 import { CANVAS_SIZE, PERFORMANCE_OPTIONS } from "@/constants/ImageCanvas";
 import { usePanel } from "@/hooks/usePanel";
-import { useIdleCallback } from "@/hooks/useIdleCallback";
-import { prefetchProfile, prefetchWork } from "@/lib/prefetch";
+import { prefetchProfile } from "@/lib/prefetch";
+import { useRef, useState, useEffect, useMemo, memo } from "react";
 
 const HoverBlurChara = dynamic(() => import("./HoverBlurChara"), {
   ssr: false,
@@ -49,10 +46,6 @@ function EnhancedHeroCanvas() {
   const [initialized, setInitialized] = useState(false);
 
   const { handlers } = usePanel();
-
-    useIdleCallback(() => {
-      prefetchWork();
-    }, 2000);
 
   useEffect(() => {
     const img = imageRef.current;
@@ -101,7 +94,7 @@ function EnhancedHeroCanvas() {
     () => ({
       filter: hovered
         ? `drop-shadow(0 0 ${
-            performanceTier === "low" ? "15px" : "25px"
+            performanceTier === "low" ? "10px" : "20px"
           } rgba(255,224,130,0.9))`
         : "brightness(0.6)",
       transition: `filter ${performanceOptions.animationDuration}s ease`,
@@ -126,7 +119,7 @@ function EnhancedHeroCanvas() {
         />
       )}
 
-      <motion.div
+      <m.div
         ref={containerRef}
         {...containerMotionProps}
         className={`absolute bottom-0 z-10 w-full flex justify-center ${
@@ -148,42 +141,41 @@ function EnhancedHeroCanvas() {
         )}
 
         {hovered && isInView && performanceOptions.enableShimmer && (
-          <motion.div layout layoutId="shimmer-effect">
+          <m.div layout layoutId="shimmer-effect">
             <ShimmerEffect
               canvasSize={CANVAS_SIZE}
               intensity={shimmerIntensity}
             />
-          </motion.div>
+          </m.div>
         )}
 
         {hovered && isInView && (
-          <motion.div layout layoutId="glow-effect">
+          <m.div layout layoutId="glow-effect">
             <GlowEffect
               hovered={hovered}
               performanceTier={performanceTier}
               performanceOptions={performanceOptions}
             />
-          </motion.div>
+          </m.div>
         )}
 
         {isInView && (
-          <motion.div layout layoutId="hero-text">
+          <m.div layout layoutId="hero-text">
             <HeroText
               hovered={hovered}
-              animationSpeed={performanceTier === "low" ? 0.8 : 1}
+              animationSpeed={performanceTier === "low" ? 0.5 : 1}
             />
-          </motion.div>
+          </m.div>
         )}
 
         <MotionImage
           ref={imageRef}
           src="/hero.webp"
           alt="hero"
+          priority
           width={CANVAS_SIZE}
           height={CANVAS_SIZE}
-          priority
-          decoding="async"
-          fetchPriority="high"
+          sizes={`(max-width: 768px) 80vw, ${CANVAS_SIZE}px`}
           style={motionImageStyle}
           initial={{ y: 30, opacity: 0 }}
           animate={{
@@ -195,9 +187,8 @@ function EnhancedHeroCanvas() {
             duration: performanceOptions.animationDuration,
             ease: "easeOut",
           }}
-          loading="eager"
         />
-      </motion.div>
+      </m.div>
     </div>
   );
 }

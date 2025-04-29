@@ -12,12 +12,8 @@ import {
   blurTransition,
   fadeTransition,
 } from "@/components/transitions/Variants";
-
-const LoadingSpinner = () => (
-  <div className="flex items-center justify-center w-full h-full min-h-[200px]">
-    <div className="w-10 h-10 border-4 border-primary rounded-full border-t-transparent animate-spin" />
-  </div>
-);
+import { useRef } from "react";
+import { useIntersectionObserver } from "@/hooks";
 
 const ProfileX = dynamic(() => import("@/components/profile/ProfileX"), {
   ssr: false,
@@ -33,21 +29,24 @@ const SkillShowcaseSection = dynamic(() => import("./section/SkillShowCase"), {
 
 const WorkSection = dynamic(() => import("./section/WorkSection"), {
   ssr: false,
-  loading: () => <LoadingSpinner />,
 });
 
 const ContactSection = dynamic(() => import("./section/ContactSection"), {
   ssr: false,
-  loading: () => <LoadingSpinner />,
 });
 function ContentClient() {
   const { panel, handlers, handleButtonNext } = usePanel();
+  const btnNextRef = useRef<HTMLDivElement>(null);
+  const isInView = useIntersectionObserver(btnNextRef, {
+    threshold: 0.5,
+    freezeOnceVisible: true,
+    rootMargin: "100px",
+  })
+  
 
   return (
     <LazyMotion features={domAnimation}>
-      <m.main className="relative w-full min-h-screen overflow-hidden bg-neutral-950 text-white">
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-900/70 to-black pointer-events-none z-0" />
-
+      <m.main ref={btnNextRef} className="relative w-full min-h-screen overflow-hidden bg-neutral-950 text-white">
         {!panel.work && !panel.contact && !panel.profile && (
           <Header
             key="header"
@@ -61,7 +60,6 @@ function ContentClient() {
               key="hero"
               {...blurTransition}
               layout
-              className="relative z-10"
             >
               <Hero />
             </m.div>
@@ -99,7 +97,7 @@ function ContentClient() {
           )}
         </AnimatePresence>
 
-        {!panel.profile && (
+        {!panel.profile && isInView && (
           <m.div
             key="next"
             variants={buttonVariants()}

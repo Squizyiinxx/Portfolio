@@ -1,7 +1,6 @@
 
-import dynamic from "next/dynamic";
+import MainContent from "./MainContent";
 
-const MainContent = dynamic(() => import("./MainContent"), { ssr: true });
 
 export const revalidate = 86400;
 export default function Home() {

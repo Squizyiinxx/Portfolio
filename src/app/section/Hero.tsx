@@ -1,6 +1,5 @@
-import { Suspense } from "react";
-import HeroBackground from "../../components/hero/HeroBackground";
-import ClientHeroContent from "../../components/hero/ClientHeroContent";
+import HeroBackground from "@/components/hero/HeroBackground";
+import ClientHeroContent from "@/components/hero/ClientHeroContent";
 
 export default function Hero() {
   return (
@@ -9,18 +8,8 @@ export default function Hero() {
       aria-label="Hero Section"
     >
       <HeroBackground />
-      <div className="relative z-10 px-6 lg:px-8 flex flex-col items-center justify-center h-screen text-white text-center">
-        <div className="mx-auto max-w-7xl py-32 flex items-center justify-center h-full w-full">
-          <div className="text-center w-full">
-            <Suspense
-              fallback={
-                <div className="h-64 animate-pulse bg-neutral-800/20 rounded-lg" />
-              }
-            >
-              <ClientHeroContent />
-            </Suspense>
-          </div>
-        </div>
+      <div className="relative z-10 px-6 lg:px-8 flex flex-col items-center justify-center h-screen text-white text-center w-full">
+        <ClientHeroContent />
       </div>
     </section>
   );
