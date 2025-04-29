@@ -13,6 +13,7 @@ const HeadingWorkSection = () => {
         I create sleek, user-friendly web apps that blend form and function for
         smooth user experience.
       </p>
+
     </motion.div>
   );
 };

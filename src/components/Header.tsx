@@ -42,7 +42,7 @@ const Header: FC<HeaderProps> = ({onShowContact,onShowWork}) => {
             aria-hidden="true"
           >
             <Image
-              src="/logo.png"
+              src="/logo.webp"
               alt="Logo SQU Glow"
               width={60}
               height={60}
@@ -56,7 +56,7 @@ const Header: FC<HeaderProps> = ({onShowContact,onShowWork}) => {
             {...logoMotionProps}
           >
             <Image
-              src="/logo.png"
+              src="/logo.webp"
               alt="Logo SQU"
               width={45}
               height={45}

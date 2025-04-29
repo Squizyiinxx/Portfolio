@@ -1,12 +1,37 @@
+import { optimizeImage } from "next/dist/server/image-optimizer";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  generateEtags: false,
 
+  async rewrites() {
+    return [
+      {
+        source: "/email",
+        destination: "/api/email",
+      },
+    ];
+  },
+
+  httpAgentOptions: {
+    keepAlive: true,
+  },
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ["framer-motion", "@heroicons/react"],
+    optimizePackageImports: [
+      "framer-motion",
+      "@heroicons/react",
+      "@emotion/styled",
+      "@emotion/react",
+    ],
+    FontFace: true,
+    optimizeImage: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   },
 
   images: {
@@ -37,14 +62,18 @@ const nextConfig = {
           key: "X-Content-Type-Options",
           value: "nosniff",
         },
+        {
+          key: "Strict-Transport-Security",
+          value: "max-age=63072000; includeSubDomains; preload",
+        },
       ],
     },
   ],
 
-  // Optimization for production builds
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
+  productionBrowserSourceMaps: false,
 };
 
 export default nextConfig;

@@ -4,10 +4,10 @@ export function StructuredData() {
     "@graph": [
       {
         "@type": "Person",
-        "@id": "https://yourportfolio.com/#person",
+        "@id": "https://squizyiinxx.vercel.app/#person",
         name: "Squizyiinxx",
-        url: "https://yourportfolio.com",
-        image: "https://yourportfolio.com/avatar.png",
+        url: "https://squizyiinxx.vercel.app",
+        image: "https://squizyiinxx.vercel.app/profile.webp",
         sameAs: [
           "https://github.com/squizyiinxx",
           "https://linkedin.com/in/joel21",
@@ -16,15 +16,15 @@ export function StructuredData() {
         worksFor: {
           "@type": "Organization",
           name: "Squizyiinxx Personal Brand",
-          url: "https://yourportfolio.com",
+          url: "https://squizyiinxx.vercel.app",
         },
         description:
           "Frontend Developer specializing in React, Next.js, Tailwind CSS, and web performance optimization.",
       },
       {
         "@type": "WebSite",
-        "@id": "https://yourportfolio.com/#website",
-        url: "https://yourportfolio.com",
+        "@id": "https://squizyiinxx.vercel.app/#website",
+        url: "https://squizyiinxx.vercel.app",
         name: "Squizyiinxx | Frontend Developer Expert",
         publisher: {
           "@id": "https://yourportfolio.com/#person",
@@ -34,34 +34,28 @@ export function StructuredData() {
       },
       {
         "@type": "BreadcrumbList",
-        "@id": "https://yourportfolio.com/#breadcrumb",
+        "@id": "https://squizyiinxx.vercel.app/#breadcrumb",
         itemListElement: [
           {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: "https://yourportfolio.com",
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: "Portfolio",
-            item: "https://yourportfolio.com/portfolio",
+            item: "https://squizyiinxx.vercel.app",
           },
         ],
       },
       {
         "@type": "CreativeWork",
-        "@id": "https://yourportfolio.com/portfolio/project-awesome",
+        "@id": "https://squizyiinxx.vercel.app/portfolio/project-awesome",
         name: "Awesome Frontend Project",
-        url: "https://yourportfolio.com/portfolio/project-awesome",
+        url: "https://squizyiinxx.vercel.app/portfolio/project-awesome",
         description:
           "A frontend project showcasing animation, responsiveness, and web performance using React and Next.js.",
         datePublished: "2024-03-01",
         author: {
-          "@id": "https://yourportfolio.com/#person",
+          "@id": "https://squizyiinxx.vercel.app/#person",
         },
-        image: "https://yourportfolio.com/portfolio/project-awesome-thumb.png",
+        image: "https://squizyiinxx.vercel.app/portfolio/profile.webp",
       },
     ],
   };

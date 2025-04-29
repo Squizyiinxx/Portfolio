@@ -1,52 +1,53 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
-import EmailTemplate from "@/components/EmailTemplate";
+import { transporter } from "@/lib/smtpTransporter"; 
+import EmailTemplate from "@/emails/EmailTemplate";
 import { isRateLimited } from "@/lib/rateLimiter";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { render } from "@react-email/components";
 
 export async function POST(req: Request) {
   try {
-    const ip = req.headers.get("x-forwarded-for") || "unknown";
+    function getClientIp(req: Request) {
+      const forwarded = req.headers.get("x-forwarded-for");
+      if (forwarded) {
+        return forwarded.split(",")[0].trim();
+      }
+      return req.headers.get("x-real-ip") || "unknown";
+    }
+    const ip = getClientIp(req);
     if (await isRateLimited(ip)) {
-      return NextResponse.json(
-        { error: "Too many requests, please slow down." },
-        { status: 429 }
-      );
+      return NextResponse.json({ error: "Too many requests, please slow down." }, { status: 429 });
     }
 
     const { name, email, message, website } = await req.json();
     if (website) {
       return NextResponse.json({ error: "Bot detected" }, { status: 400 });
     }
-
     if (!name || !email || !message) {
       return NextResponse.json({ error: "Invalid form data" }, { status: 400 });
     }
 
     const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
     if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: "Invalid email format" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
     }
 
     const safeName = String(name).trim().slice(0, 100);
     const safeEmail = String(email).trim().slice(0, 100);
     const safeMessage = String(message).trim().slice(0, 2000);
 
-    const response = await resend.emails.send({
-      from: "Baginda Contact Form <codewizard211@gmail.com>",
-      to: ["codewizard211@gmail.com"],
-      subject: `New Contact from ${safeName}`,
-      react: EmailTemplate({
-        name: safeName,
-        email: safeEmail,
-        message: safeMessage,
-      }),
+    const htmlBody = await render(EmailTemplate({name, email, message,ip}), {
+        pretty: true
     });
-    return NextResponse.json(response);
+
+    await transporter.sendMail({
+      from: `"Portfolio Contact" <${safeEmail}>`,
+      to: process.env.SMTP_USER,
+      subject: `New Contact from ${safeName}`,
+      text: `${safeMessage}\n\nFrom: ${safeName} <${safeEmail}>`,
+      html: htmlBody,
+    });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Contact API error:", error);
     return NextResponse.json(

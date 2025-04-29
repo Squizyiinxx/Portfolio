@@ -3,6 +3,8 @@ import { Karla, Yeseva_One } from "next/font/google";
 import "./globals.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { StructuredData } from "@/components/StructuredData";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const yesevaOne = Yeseva_One({
   variable: "--font-yeseva-one",
@@ -24,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s | Squizyiinxx",
   },
   alternates: {
-    canonical: "https://yourportfolio.com",
+    canonical: "https://squizyiinxx.vercel.app",
     languages: {
       "en-US": "/en",
       "id-ID": "/id",
@@ -52,12 +54,12 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "your-google-verification-code",
+    google: "HhFYT3b42QOtEcYiYTjagHJXJtOIvzIu8glcKhRyrvQ",
   },
   category: "technology",
   applicationName: "Portfolio",
   publisher: "Squizyiinxx",
-  authors: [{ name: "Squizyiinxx", url: "https://yourportfolio.com" }],
+  authors: [{ name: "Squizyiinxx", url: "https://squizyiinxx.vercel.app" }],
 };
 
 export default function RootLayout({
@@ -107,10 +109,10 @@ export default function RootLayout({
           property="og:description"
           content="Frontend Developer specializing in modern web development with 3+ years experience. Portfolio showcasing responsive UI, animations, and web performance optimization."
         />
-        <meta property="og:url" content="https://yourportfolio.com" />
+        <meta property="og:url" content="https://squizyiinxx.vercel.app" />
         <meta
           property="og:image"
-          content="https://yourportfolio.com/og-image.jpg"
+          content="https://squizyiinxx.vercel.app/logo.webp"
         />
 
         <meta name="twitter:card" content="summary_large_image" />
@@ -127,7 +129,11 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${yesevaOne.variable} ${karlaFont.variable} antialiased bg-white text-black`}
       >
-        <ErrorBoundary>{children}</ErrorBoundary>
+        <ErrorBoundary>
+          {children}
+          <Analytics />
+          <SpeedInsights />
+        </ErrorBoundary>
       </body>
     </html>
   );
