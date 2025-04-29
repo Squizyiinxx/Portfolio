@@ -20,7 +20,7 @@ const FormContact = () => {
   const {
     register,
     handleSubmit,
-    getValues,
+    watch,
     reset,
     formState: { errors, isSubmitting, isSubmitSuccessful },
     setError,
@@ -112,7 +112,7 @@ const FormContact = () => {
           disabled={isSubmitting}
           whileHover={{ scale: isSubmitting ? 1 : 1.05 }}
           whileTap={{ scale: isSubmitting ? 1 : 0.95 }}
-          className={`${getValues('name') && getValues('email') && getValues('message') && 'shadow-[0_0_10px_rgba(255,255,0,0.8)] brightness-100'}bg-primary-300 text-primary-800 px-6 py-3 rounded-xl font-semibold transition-shadow duration-300 brightness-75  disabled:opacity-50 w-full md:w-44`}
+          className={`${watch('name') && watch('email') && watch('message') && 'shadow-[0_0_10px_rgba(255,255,0,0.8)] brightness-100'}bg-primary-300 text-primary-800 px-6 py-3 rounded-xl font-semibold transition-shadow duration-300 brightness-75  disabled:opacity-50 w-full md:w-44`}
           aria-disabled={isSubmitting}
           aria-busy={isSubmitting}
         >

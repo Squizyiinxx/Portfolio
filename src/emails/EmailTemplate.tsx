@@ -39,9 +39,9 @@ export const YelpRecentLoginEmail = ({
         <Container>
           <Section style={logo}>
             <Img
-              width={100}
-              height={100}
-              src={`${process.env.NEXT_PUBLIC_BASE_URL}/logo.webp`}
+              width={80}
+              height={80}
+              src={`${process.env.NEXT_PUBLIC_BASE_URL}/logo-email.jpg`}
               alt="Squizyiinxx logo"
             />
           </Section>
@@ -145,6 +145,8 @@ const paragraph = {
 
 const logo = {
   padding: "30px 20px",
+  display:"flex",
+  alignItems:"center",
 };
 
 const content = {
