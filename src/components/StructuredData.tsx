@@ -12,25 +12,25 @@ export function StructuredData() {
           "https://github.com/squizyiinxx",
           "https://linkedin.com/in/joel21",
         ],
-        jobTitle: "Frontend Developer Expert",
+        jobTitle: "FullStack Developer Expert",
         worksFor: {
           "@type": "Organization",
           name: "Squizyiinxx Personal Brand",
           url: "https://squizyiinxx.vercel.app",
         },
         description:
-          "Frontend Developer specializing in React, Next.js, Tailwind CSS, and web performance optimization.",
+          "FullStack Developer in React, Next.js, Laravel, Vue.js, Nuxt.js, Node.js, and PHP with 3+ years experience",
       },
       {
         "@type": "WebSite",
         "@id": "https://squizyiinxx.vercel.app/#website",
         url: "https://squizyiinxx.vercel.app",
-        name: "Squizyiinxx | Frontend Developer Expert",
+        name: "Squizyiinxx | FullStack Developer Expert",
         publisher: {
           "@id": "https://yourportfolio.com/#person",
         },
         description:
-          "Official portfolio website of Squizyiinxx, a professional frontend developer expert.",
+          "Official portfolio website of Squizyiinxx, a professional FullStack developer expert.",
       },
       {
         "@type": "BreadcrumbList",
@@ -47,15 +47,15 @@ export function StructuredData() {
       {
         "@type": "CreativeWork",
         "@id": "https://squizyiinxx.vercel.app/portfolio/project-awesome",
-        name: "Awesome Frontend Project",
+        name: "Awesome FullStack Project",
         url: "https://squizyiinxx.vercel.app/portfolio/project-awesome",
         description:
-          "A frontend project showcasing animation, responsiveness, and web performance using React and Next.js.",
-        datePublished: "2024-03-01",
+          "A FullStack project showcasing modern web development, including UI/UX, responsiveness, and web performance.",
+        datePublished: "2025-04-29",
         author: {
           "@id": "https://squizyiinxx.vercel.app/#person",
         },
-        image: "https://squizyiinxx.vercel.app/portfolio/profile.webp",
+        image: "https://squizyiinxx.vercel.app/profile.webp",
       },
     ],
   };

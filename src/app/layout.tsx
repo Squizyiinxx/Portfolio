@@ -22,7 +22,7 @@ const karlaFont = Karla({
 
 export const metadata: Metadata = {
   title: {
-    default: "Squizyiinxx | Frontend Developer",
+    default: "Squizyiinxx | FullStack Developer",
     template: "%s | Squizyiinxx",
   },
   alternates: {
@@ -33,14 +33,17 @@ export const metadata: Metadata = {
     },
   },
   description:
-    "Frontend Developer specializing in modern web development with 3+ years experience. Portfolio showcasing responsive UI, animations, and web performance optimization.",
+    "FullStack Developer in modern web development with 3+ years experience. Portfolio showcasing responsive UI, animations, and web performance optimization.",
   keywords: [
-    "Frontend Developer",
-    "React Expert",
-    "Next.js Developer",
+    "FullStack Developer",
+    "Squizyiiinxx",
+    "Portfolio",
+    "Portfolio Squizyiinxx",
+    "Modern Website",
+    "Web Developer",
     "Portfolio",
     "Laravel",
-    "UI/UX",
+    "Cuma bisa ngoding",
   ],
   robots: {
     index: true,
@@ -104,10 +107,10 @@ export default function RootLayout({
 
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Squizyiinxx Portfolio" />
-        <meta property="og:title" content="Squizyiinxx | Frontend Developer" />
+        <meta property="og:title" content="Squizyiinxx | FullStack Developer" />
         <meta
           property="og:description"
-          content="Frontend Developer specializing in modern web development with 3+ years experience. Portfolio showcasing responsive UI, animations, and web performance optimization."
+          content="FullStack Developer specializing in modern web development with 3+ years experience. Portfolio showcasing responsive UI, animations, and web performance optimization."
         />
         <meta property="og:url" content="https://squizyiinxx.vercel.app" />
         <meta
@@ -116,10 +119,10 @@ export default function RootLayout({
         />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Squizyiinxx | Frontend Developer" />
+        <meta name="twitter:title" content="Squizyiinxx | FullStack Developer" />
         <meta
           name="twitter:description"
-          content="Frontend Developer specializing in modern web development with 3+ years experience. Portfolio showcasing responsive UI, animations, and web performance optimization."
+          content="FullStack Developer specializing in modern web development with 3+ years experience. Portfolio showcasing responsive UI, animations, and web performance optimization."
         />
         <meta name="twitter:image" content="https://x.com/Squvy51/photo" />
         <meta name="twitter:site" content="@Squvy51" />
