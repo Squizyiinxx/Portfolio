@@ -39,6 +39,8 @@ export const YelpRecentLoginEmail = ({
         <Container>
           <Section style={logo}>
             <Img
+              width={100}
+              height={100}
               src={`${process.env.NEXT_PUBLIC_BASE_URL}/logo.webp`}
               alt="Squizyiinxx logo"
             />

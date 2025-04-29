@@ -8,7 +8,7 @@ import { LazyMotion, domAnimation, m } from "framer-motion";
 
 const ContactSchema = z
   .object({
-    name: z.string().min(1, "Name is required"),
+    name: z.string().min(3, "Name is required"),
     email: z.string().email("Invalid email address"),
     message: z.string().min(10, "Message must be at least 10 characters"),
     website: z.string().optional(), 
@@ -20,6 +20,7 @@ const FormContact = () => {
   const {
     register,
     handleSubmit,
+    getValues,
     reset,
     formState: { errors, isSubmitting, isSubmitSuccessful },
     setError,
@@ -111,7 +112,8 @@ const FormContact = () => {
           disabled={isSubmitting}
           whileHover={{ scale: isSubmitting ? 1 : 1.05 }}
           whileTap={{ scale: isSubmitting ? 1 : 0.95 }}
-          className="bg-primary-300 text-primary-800 px-6 py-3 rounded-xl font-semibold transition-shadow duration-300 brightness-75 hover:brightness-100 hover:shadow-[0_0_10px_rgba(255,255,0,0.8)] disabled:opacity-50 w-full md:w-44"
+          className={`${getValues('name') && getValues('email') && getValues('message') && 'shadow-[0_0_10px_rgba(255,255,0,0.8)] brightness-100'}bg-primary-300 text-primary-800 px-6 py-3 rounded-xl font-semibold transition-shadow duration-300 brightness-75  disabled:opacity-50 w-full md:w-44`}
+          aria-disabled={isSubmitting}
           aria-busy={isSubmitting}
         >
           {isSubmitting ? "Sending..." : "Send Message"}
