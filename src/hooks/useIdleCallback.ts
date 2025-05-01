@@ -1,24 +1,43 @@
-import { useEffect } from "react";
+import { useEffect, useCallback, useRef } from "react";
 
-export function useIdleCallback(callback: () => void, timeout = 2000) {
+export interface IdleOptions {
+  timeout?: number;
+}
+export function useIdleCallback(
+  callback: () => void,
+  options: IdleOptions = {},
+  deps: any[] = []
+) {
+  const memoCb = useCallback(callback, deps);
+  const handleRef = useRef<number | null>(null);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    let mounted = true;
-    const idleCallback =
-      "requestIdleCallback" in window
-        ? window.requestIdleCallback
-        : (cb: () => void) => setTimeout(cb, timeout);
+    let active = true;
+    const { timeout } = options;
+    const requestIdle =
+      window.requestIdleCallback?.bind(window) ??
+      ((fn: IdleRequestCallback, _opts?: IdleRequestOptions) =>
+        window.setTimeout(fn as unknown as FrameRequestCallback, timeout ?? 2000));
+    const cancelIdle =
+      window.cancelIdleCallback?.bind(window) ??
+      ((id: number) => clearTimeout(id));
 
-    const id = idleCallback(() => mounted && callback());
+    // Jadwalkan idle callback
+    handleRef.current = requestIdle(
+      (deadline: IdleDeadline) => {
+        if (active) memoCb();
+      },
+      timeout !== undefined ? { timeout } : undefined
+    ) as unknown as number;
 
+    // Cleanup: batalkan timer saat unmount
     return () => {
-      mounted = false;
-      if ("cancelIdleCallback" in window && typeof id === "number") {
-        window.cancelIdleCallback(id as number);
-      } else {
-        clearTimeout(id as ReturnType<typeof setTimeout>);
+      active = false;
+      if (handleRef.current !== null) {
+        cancelIdle(handleRef.current);
       }
     };
-  }, [callback, timeout]);
+  }, [memoCb, options.timeout]);
 }

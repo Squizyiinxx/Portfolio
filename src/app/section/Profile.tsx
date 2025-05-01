@@ -1,36 +1,14 @@
-// ProfileSection.tsx
-
 "use client";
 
 import { memo, Suspense, useMemo } from "react";
 import { HTMLMotionProps, motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
-const ProfileText = dynamic(
-  () =>
-    import("@/components/profile/ProfileComponents").then(
-      (mod) => mod.ProfileText
-    ),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-32 animate-pulse bg-slate-800 rounded-2xl" />
-    ),
-  }
-);
+const ProfileText = dynamic(() =>import("@/components/profile/ProfileComponents").then((mod) => mod.ProfileText),
+{ssr: false});
 
-const ProfileImage = dynamic(
-  () =>
-    import("@/components/profile/ProfileComponents").then(
-      (mod) => mod.ProfileImage
-    ),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="w-[300px] h-[300px] md:w-[400px] md:h-[400px] bg-slate-800 rounded-2xl animate-pulse" />
-    ),
-  }
-);
+const ProfileImage = dynamic(() =>import("@/components/profile/ProfileComponents").then((mod) => mod.ProfileImage),
+{ssr: false});
 
 const SectionContainer = memo(function SectionContainer({
   children,
@@ -51,8 +29,7 @@ const SectionContainer = memo(function SectionContainer({
   return (
     <motion.section
       {...motionProps}
-      className={`w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-16 lg:gap-24 justify-between py-20 items-center ${className}`}
-      style={{ transform: "translate3d(0,0,0)", willChange: "transform" }}
+      className={`w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-16 lg:gap-24 justify-between py-20 items-center optimizing-transition ${className}`}
       {...props}
     >
       {children}

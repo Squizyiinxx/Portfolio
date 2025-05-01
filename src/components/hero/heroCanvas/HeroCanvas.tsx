@@ -4,13 +4,13 @@ import { m } from "framer-motion";
 import dynamic from "next/dynamic";
 import MotionImage from "./MotionImage";
 import useIntersectionObserver from "@/hooks/useIntersectionObserver";
-import useDeviceCapabilities from "@/hooks/useDeviceCapabilities";
 import ImageHoverDetector from "./ImageHoverDetector";
 import { PerformanceTier } from "@/types/interfaceHero";
 import { CANVAS_SIZE, PERFORMANCE_OPTIONS } from "@/constants/ImageCanvas";
 import { usePanel } from "@/hooks/usePanel";
 import { prefetchProfile } from "@/lib/prefetch";
 import { useRef, useState, useEffect, useMemo, memo } from "react";
+import { useDeviceCapabilitiesStore } from "@/store/DeviceCapabilities";
 
 const HoverBlurChara = dynamic(() => import("./HoverBlurChara"), {
   ssr: false,
@@ -31,11 +31,11 @@ function EnhancedHeroCanvas() {
   const imageRef = useRef<HTMLImageElement>(null);
 
   const isInView = useIntersectionObserver(containerRef, {
-    threshold: 0.1,
+    threshold: 0.5,
     rootMargin: "100px",
   });
 
-  const deviceCapabilities = useDeviceCapabilities();
+  const deviceCapabilities = useDeviceCapabilitiesStore((s) => s.capabilities);
   const performanceTier = deviceCapabilities.tier as PerformanceTier;
 
   const performanceOptions =
@@ -67,6 +67,16 @@ function EnhancedHeroCanvas() {
       return () => img.removeEventListener("load", onLoad);
     }
   }, [performanceTier]);
+
+  const motionAnimate = useMemo(
+    () => ({
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+      transition: { duration: 0.5 },
+    }),
+    []
+  );
 
   const shimmerIntensity = useMemo(
     () => (performanceTier === "high" ? 1 : 0.6),
@@ -108,10 +118,7 @@ function EnhancedHeroCanvas() {
   );
 
   return (
-    <div
-      className="fixed bottom-0 left-1/2 w-full h-screen transform -translate-x-1/2 overflow-hidden"
-      style={{ transform: "translate3d(0,0,0)" }}
-    >
+    <div className="fixed bottom-0 left-1/2 w-full h-screen transform -translate-x-1/2 overflow-hidden">
       {hovered && performanceTier !== "low" && (
         <HoverBlurChara
           hovered={hovered}
@@ -130,18 +137,20 @@ function EnhancedHeroCanvas() {
           <ImageHoverDetector
             imageRef={imageRef}
             canvasRef={canvasRef}
-            onHoverChange={setHovered}
-            onImageClick={() => {
-              handlers.showProfile();
+            onHoverChange={() => {
+              setHovered(!hovered);
               prefetchProfile();
             }}
+            onImageClick={handlers.showProfile}
             canvasSize={CANVAS_SIZE}
-            throttleMs={performanceTier === "low" ? 80 : 50}
+            throttleMs={performanceTier === "low" ? 85 : 50}
           />
         )}
 
         {hovered && isInView && performanceOptions.enableShimmer && (
-          <m.div layout layoutId="shimmer-effect">
+          <m.div
+          {...motionAnimate}
+          >
             <ShimmerEffect
               canvasSize={CANVAS_SIZE}
               intensity={shimmerIntensity}
@@ -150,7 +159,7 @@ function EnhancedHeroCanvas() {
         )}
 
         {hovered && isInView && (
-          <m.div layout layoutId="glow-effect">
+          <m.div {...motionAnimate}>
             <GlowEffect
               hovered={hovered}
               performanceTier={performanceTier}
@@ -171,7 +180,6 @@ function EnhancedHeroCanvas() {
         <MotionImage
           ref={imageRef}
           src="/hero.webp"
-          alt="hero"
           priority
           width={CANVAS_SIZE}
           height={CANVAS_SIZE}

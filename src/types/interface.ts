@@ -1,4 +1,5 @@
 import { MotionStyle, MotionValue } from "framer-motion";
+import { DeviceCapabilities, Options } from "./interfaceDeviceCapabilities";
 
 interface IconProps {
   className?: string;
@@ -41,4 +42,14 @@ interface HeaderProps {
   onShowWork: () => void;
   onShowContact: () => void;
 }
-export type { IconProps, ItemProjects, LayerProps, CinematicImageProps,HeaderProps };
+
+ interface DeviceCapabilitiesStore {
+  capabilities: DeviceCapabilities;
+  hasDetected: boolean;
+  setCapabilities: (capabilities: DeviceCapabilities) => void;
+  setHasDetected: (val: boolean) => void;
+  detectCapabilities: (options?: Options) => Promise<DeviceCapabilities>;
+  getOptimalParticleCount: (maxCount?: number) => number;
+}
+
+export type { IconProps, ItemProjects, LayerProps, CinematicImageProps,HeaderProps,DeviceCapabilitiesStore,DeviceCapabilities };

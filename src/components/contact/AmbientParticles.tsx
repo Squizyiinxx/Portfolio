@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, memo } from "react";
+import { useEffect, useRef, memo, useMemo } from "react";
 import {
   LazyMotion,
   domAnimation,
@@ -8,7 +8,7 @@ import {
   useAnimationControls,
   useMotionValue,
 } from "framer-motion";
-import useDeviceCapabilities from "@/hooks/useDeviceCapabilities";
+import { useDeviceCapabilitiesStore } from "@/store/DeviceCapabilities";
 
 interface Particle {
   x: number;
@@ -39,7 +39,7 @@ class ParticleEngine {
     tier: "low" | "medium" | "high"
   ) {
     this.canvas = canvas;
-    const ctx = canvas.getContext("2d", { alpha: true });
+    const ctx = canvas.getContext("2d", { alpha: true, willReadFrequently: true });
     if (!ctx) throw new Error("Canvas context unavailable");
     this.ctx = ctx;
 
@@ -112,8 +112,6 @@ class ParticleEngine {
   private animate = (timestamp?: number) => {
     const { ctx, width, height, particles } = this;
     ctx.clearRect(0, 0, width, height);
-
-    // Loop untuk menggambar partikel dan memperbarui posisinya
     for (const p of particles) {
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -133,7 +131,6 @@ class ParticleEngine {
     if (this.frameTimes.length > 0) {
       const delta = now - this.frameTimes[this.frameTimes.length - 1];
       const fps = 1000 / delta;
-      // Logging FPS hanya di development, tidak di production
       if (
         process.env.NODE_ENV !== "production" &&
         this.frameTimes.length % 60 === 0
@@ -176,14 +173,20 @@ const AmbientParticles = () => {
   const controls = useAnimationControls();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const { getOptimalParticleCount, tier } = useDeviceCapabilities();
+  const tier = useDeviceCapabilitiesStore(
+    (s) => s.capabilities?.tier || "medium"
+  );
+  const getOptimalParticleCount = useDeviceCapabilitiesStore(
+    (s) => s.getOptimalParticleCount
+  );
+  const optimalParticleCount = useMemo(() => {
+    return getOptimalParticleCount(120); 
+  }, [getOptimalParticleCount, tier]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
-    const initialParticleCount = getOptimalParticleCount(120); // Menetapkan jumlah partikel yang optimal
-    engineRef.current = new ParticleEngine(canvas, initialParticleCount, tier);
+    engineRef.current = new ParticleEngine(canvas, optimalParticleCount, tier);
 
     controls.start({
       opacity: 1,
@@ -193,7 +196,7 @@ const AmbientParticles = () => {
     return () => {
       engineRef.current?.destroy();
     };
-  }, [controls, getOptimalParticleCount, tier]);
+  }, [controls, optimalParticleCount, tier]);
 
   useEffect(() => {
     let rafId: number | null = null;
@@ -223,7 +226,7 @@ const AmbientParticles = () => {
         style={{
           x,
           y,
-          filter: "drop-shadow(0 0 6px rgba(255,255,0,0.6))",
+          filter: "drop-shadow(0 0 8px rgba(255,255,0,0.6))",
           willChange: "transform, opacity",
           contain: "strict",
           transform: "translateZ(0)",

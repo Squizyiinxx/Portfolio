@@ -2,7 +2,6 @@ import { usePanelStore } from "@/store/PanelStore";
 import { useCallback, useMemo } from "react";
 
 export const usePanel = () => {
-  // Selektif mengambil hanya state yang diperlukan
   const profile = usePanelStore((state) => state.profile);
   const work = usePanelStore((state) => state.work);
   const contact = usePanelStore((state) => state.contact);
@@ -11,7 +10,6 @@ export const usePanel = () => {
   const reset = usePanelStore((state) => state.reset);
   const handleButtonNext = usePanelStore((state) => state.handleButtonNext);
 
-  // Perbaikan: memindahkan useCallback ke top level, tidak dalam useMemo
   const showProfile = useCallback(() => show("profile"), [show]);
   const closeProfile = useCallback(() => close("profile"), [close]);
   const showWork = useCallback(() => show("work"), [show]);

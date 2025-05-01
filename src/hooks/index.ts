@@ -1,4 +1,4 @@
-import useDeviceCapabilities from "./useDeviceCapabilities";
+
 import useIntersectionObserver from "./useIntersectionObserver";
 import { useCleanup } from "./useCleanup";
 import { useAdaptiveMousePosition } from "./useAdaptiveMousePosition";
@@ -11,7 +11,6 @@ import { useTiltEffect } from "./useTiltEffect";
 export {
     useAdaptiveMousePosition,
     useCleanup,
-    useDeviceCapabilities,
     useIdleCallback,
     useIntersectionObserver,
     usePanel,

@@ -5,10 +5,10 @@ import { m } from "framer-motion";
 import { projects } from "@/constants/projects";
 import OptimizedProjectCard from "./ProjectCard";
 import {
-  useDeviceCapabilities,
   useIntersectionObserver,
   useCleanup,
 } from "@/hooks";
+import { useDeviceCapabilitiesStore } from "@/store/DeviceCapabilities";
 
 const ProjectGridContainer = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -16,7 +16,7 @@ const ProjectGridContainer = () => {
   const rafId = useRef<number | null>(null);
   const lastMoveTime = useRef<number>(0);
 
-  const { tier = "medium" } = useDeviceCapabilities();
+  const tier = useDeviceCapabilitiesStore((s) => s.capabilities?.tier || "medium");
   const [visibleItems, setVisibleItems] = useState<number>(12);
 
   const loadMoreRef = useRef<HTMLDivElement>(null);

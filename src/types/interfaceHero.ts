@@ -16,7 +16,6 @@ interface PerformanceOptions {
   animationDuration: number;
 }
 
-// ImageHoverDetector props interface
 interface ImageHoverDetectorProps {
   imageRef: RefObject<HTMLImageElement | null>;
   canvasRef: RefObject<HTMLCanvasElement| null>;
@@ -26,7 +25,6 @@ interface ImageHoverDetectorProps {
   throttleMs?: number;
 }
 
-// Props for EnhancedHeroCanvas
 interface EnhancedHeroCanvasProps {
   setProfile: () => void;
 }

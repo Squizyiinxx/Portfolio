@@ -1,7 +1,5 @@
 import { memo, useMemo } from "react";
-
 import { PerformanceTier } from "@/types/interfaceHero";
-
 import { PerformanceOptions } from "@/types/interfaceHero";
 import { motion } from "framer-motion";
 

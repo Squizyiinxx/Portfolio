@@ -3,10 +3,11 @@
 import React, { useRef, useState, useMemo, useCallback } from "react";
 import { m, useMotionValue } from "framer-motion";
 import dynamic from "next/dynamic";
-import {useAdaptiveMousePosition,useCleanup,useDeviceCapabilities,useParallaxControls,useIdleCallback,useIntersectionObserver } from "@/hooks"
+import {useAdaptiveMousePosition,useCleanup,useParallaxControls,useIdleCallback,useIntersectionObserver } from "@/hooks"
 import { throttle } from "@/utils/throttleDebounce";
 import ScrollContainer from "../ScrollContainer";
 import { sectionVariant } from "../transitions/Variants";
+import { useDeviceCapabilitiesStore } from "@/store/DeviceCapabilities";
 
 const CinematicBackgroundLayer = dynamic(
   () => import("@/components/CinematicBackgroundLayer"),
@@ -35,7 +36,7 @@ const PageTemplate: React.FC<PageTemplateProps> = React.memo(
       mouseY: isLoaded ? mouseY : zeroMotion,
       scrollYProgress: isLoaded ? scrollY : undefined,
     });
-    const { tier = "medium" } = useDeviceCapabilities();
+    const tier = useDeviceCapabilitiesStore((s) => s.capabilities?.tier || "medium");
     const blurStyle = useMemo(() => {
       return tier === "low"
         ? "blur(2px)"
@@ -52,7 +53,7 @@ const PageTemplate: React.FC<PageTemplateProps> = React.memo(
       motionValues: [scrollY],
       onCustomCleanup: () => parallax.cleanup?.(),
     });
-    useIdleCallback(() => setIsLoaded(true), 1500);
+    useIdleCallback(() => setIsLoaded(true), { timeout: 300 }, []);
     const throttledSetScroll = useMemo(
       () =>
         throttle(
@@ -86,9 +87,9 @@ const PageTemplate: React.FC<PageTemplateProps> = React.memo(
         }}
       >
         <div className="relative w-full h-full overflow-hidden">
-          {isLoaded && isInView && (
+          {isInView && (
             <>
-              {Component}
+              {isLoaded && Component}
               <CinematicBackgroundLayer
                 bgSrc={bgSrc}
                 bgAlt={bgAlt}

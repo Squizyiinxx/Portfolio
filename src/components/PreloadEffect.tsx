@@ -1,18 +1,22 @@
-import useDeviceCapabilities from "@/hooks/useDeviceCapabilities";
+import { useDeviceCapabilitiesStore } from "@/store/DeviceCapabilities";
 import { useIdleCallback } from "@/hooks/useIdleCallback";
+
 export type PreloadProps = {
   modules: (() => Promise<unknown>)[];
   criticalModules?: (() => Promise<unknown>)[];
   images?: string[];
   fonts?: string[];
 };
+
 export default function Preload({
   modules,
   criticalModules = [],
   images = [],
   fonts = [],
 }: PreloadProps) {
-  const { tier = "medium" } = useDeviceCapabilities();
+  const tier = useDeviceCapabilitiesStore(
+    (s) => s.capabilities?.tier || "medium"
+  );
 
   const preloadModules = (mods: (() => Promise<unknown>)[]) => {
     return Promise.all(
@@ -53,7 +57,7 @@ export default function Preload({
     }
   };
 
-  useIdleCallback(() => preloadAll(), 300);
+  useIdleCallback(() => preloadAll(), { timeout: 300 }, []);
 
   return null;
 }

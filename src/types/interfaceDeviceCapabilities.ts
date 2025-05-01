@@ -14,16 +14,10 @@ interface BatteryManager {
   removeEventListener: (type: string, listener: EventListener) => void;
 }
 
-interface ConnectionType {
-  effectiveType: string;
-  saveData: boolean;
-}
-
 interface NavigatorWithConnection extends Navigator {
-  connection?: ConnectionType;
+  connection?: ConnectionInfo;
 }
 
-// Define types for our hook options and state
 interface Options {
   detectOnMount?: boolean;
   cacheTTL?: number;
@@ -32,6 +26,8 @@ interface Options {
 interface ConnectionInfo {
   type: string;
   saveData: boolean;
+  downlink?: number;
+  rtt?: number;
 }
 
 interface BatteryInfo {
@@ -48,7 +44,7 @@ interface DeviceCapabilities {
   isMobile: boolean;
   connection: ConnectionInfo | null;
   batteryStatus: BatteryInfo | null;
-  lastUpdated: number | null;
+  lastUpdated?: number | null;
 }
 
 interface DeviceCapabilitiesResult extends DeviceCapabilities {

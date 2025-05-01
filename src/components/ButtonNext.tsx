@@ -122,7 +122,6 @@ const ButtonNext = ({
           exit={{ scale: 0, opacity: 0.7 }}
         />
       )}
-      {/* Arrow Icon */}
       <motion.div animate={controls}>
         <ArrowRightIcon
           className={

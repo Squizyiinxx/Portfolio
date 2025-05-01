@@ -80,28 +80,23 @@ export const sectionVariant: Variants = {
 export const panelVariants: Variants = {
   hidden: {
     x: "100vw",
-    filter: "blur(10px)",
     zIndex: 0,
   },
   visible: {
     x: 0,
-    filter: "blur(0)",
     zIndex: 20, 
     transition: {
       x: { duration: 0.9, ease: [0.25, 1, 0.5, 1] },
       opacity: { duration: 0.5 },
-      filter: { duration: 0.6 },
       delayChildren: 0.2,
       staggerChildren: 0.1,
     },
   },
   exit: {
     x: 0, 
-    filter: "blur(6px)",
     zIndex: -10,
     transition: {
       opacity: { duration: 0.4, ease: "easeOut" },
-      filter: { duration: 0.5, ease: "easeOut" },
       zIndex: { delay: 0.5 },
     },
   },

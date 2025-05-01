@@ -1,12 +1,11 @@
-// src/components/OptimizedProjectCard.tsx
 "use client";
 
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ItemProjects } from "@/types/interface";
 import { useTiltEffect } from "@/hooks/useTiltEffect";
-import useIntersectionObserver from "@/hooks/useIntersectionObserver";
+import { useIdleCallback } from "@/hooks/useIdleCallback";
 
 const PLACEHOLDER_STYLE =
   "absolute inset-0 z-10 animate-pulse bg-gradient-to-r from-neutral-800 via-neutral-700 to-neutral-800 rounded-lg";
@@ -21,90 +20,30 @@ interface ProjectCardProps {
   };
 }
 
-const TechBadge = memo(({ tech }: { tech: string }) => (
-  <span className="bg-white/10 text-xs px-3 py-1 rounded-full text-white border border-white/20">
-    {tech}
-  </span>
-));
-TechBadge.displayName = "TechBadge";
-
-const OptimizedCardImage = memo(
-  ({
-    src,
-    alt,
-    isLoaded,
-    onLoad,
-  }: {
-    src: string;
-    alt: string;
-    isLoaded: boolean;
-    onLoad: () => void;
-  }) => (
-    <>
-      {!isLoaded && <div className={PLACEHOLDER_STYLE} />}
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        sizes={IMAGE_SIZES}
-        className={`object-cover rounded-lg transition-opacity duration-700 ease-in-out ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
-        onLoad={onLoad}
-        loading="lazy"
-      />
-    </>
-  )
-);
-OptimizedCardImage.displayName = "OptimizedCardImage";
-
-const CardContent = memo(
-  ({
-    title,
-    description,
-    stack,
-    animationDuration,
-  }: {
-    title: string;
-    description: string;
-    stack: string[];
-    animationDuration: number;
-  }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 10 }}
-      transition={{ delay: 0.1, duration: animationDuration }}
-    >
-      <h3 className="text-xl leading-6 tracking-wide font-semibold mb-2">
-        {title}
-      </h3>
-      <p className="text-slate-300 text-sm leading-relaxed mb-4">
-        {description}
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {stack.map((tech) => (
-          <TechBadge key={tech} tech={tech} />
-        ))}
-      </div>
-    </motion.div>
-  )
-);
-CardContent.displayName = "CardContent";
+function shouldEnableTilt(configEnable: boolean): boolean {
+  if (!configEnable || typeof window === "undefined") return false;
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+  const lowEnd =
+    navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2;
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  return !(reducedMotion || lowEnd || isMobile);
+}
 
 const OptimizedProjectCard = memo(({ item, config }: ProjectCardProps) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const isInView = useIntersectionObserver(cardRef, {
-    threshold: 0.1,
-    rootMargin: "100px",
-    freezeOnceVisible: true,
-  });
-
   const [isLoaded, setIsLoaded] = useState(false);
-  const tiltValues = useTiltEffect({
+  const [ready, setReady] = useState(false);
+
+  const enableTilt = shouldEnableTilt(config.enableTilt);
+
+  useIdleCallback(() => setReady(true), { timeout: 500 }, [item.id]);
+
+  const tilt = useTiltEffect({
     max: 10 * config.tiltIntensity,
     speed: 400,
-    disabled: !config.enableTilt,
+    throttleMs: 40,
+    disabled: !ready || !enableTilt,
   });
 
   const handleImageLoad = useCallback(() => {
@@ -113,83 +52,66 @@ const OptimizedProjectCard = memo(({ item, config }: ProjectCardProps) => {
   }, [item.id]);
 
   useEffect(() => {
-    const element = cardRef.current;
-    if (!element || !config.enableTilt) return;
+    const el = tilt.elementRef.current;
+    if (!el || !ready || !enableTilt) return;
 
-    const handleTilt = (e: Event) => {
-      const { mouseX, mouseY } = (e as CustomEvent).detail;
-      requestAnimationFrame(() => {
-        tiltValues.rotateX.set(
-          (mouseY / element.clientHeight - 0.5) * -20 * config.tiltIntensity
-        );
-        tiltValues.rotateY.set(
-          (mouseX / element.clientWidth - 0.5) * 20 * config.tiltIntensity
-        );
-        tiltValues.scale.set(1.05);
-        performance.mark(`tilt-updated-${item.id}`);
-      });
-    };
-
-    const handleReset = () => {
-      requestAnimationFrame(() => {
-        tiltValues.rotateX.set(0);
-        tiltValues.rotateY.set(0);
-        tiltValues.scale.set(1);
-      });
-    };
-
-    element.addEventListener("cardTilt", handleTilt);
-    element.addEventListener("cardTiltReset", handleReset);
-
+    el.addEventListener("mousemove", tilt.handleMouseMove);
+    el.addEventListener("mouseleave", tilt.handleMouseLeave);
     return () => {
-      element.removeEventListener("cardTilt", handleTilt);
-      element.removeEventListener("cardTiltReset", handleReset);
+      el.removeEventListener("mousemove", tilt.handleMouseMove);
+      el.removeEventListener("mouseleave", tilt.handleMouseLeave);
     };
-  }, [config.enableTilt, tiltValues, config.tiltIntensity, item.id]);
-
-  const cardStyle = {
-    rotateX: tiltValues.rotateX,
-    rotateY: tiltValues.rotateY,
-    scale: tiltValues.scale,
-    transformPerspective: 1000,
-    transformStyle: "preserve-3d" as const,
-    transform: "translateZ(0)",
-    willChange: "transform, opacity",
-  };
+  }, [ready, enableTilt, tilt]);
 
   return (
     <motion.div
-      ref={cardRef}
-      data-id={item.id.toString()}
+      ref={tilt.elementRef as React.RefObject<HTMLDivElement>}
       className="project-card group bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl p-6 shadow-xl border border-white/10 transition-colors duration-300 cursor-pointer"
-      style={cardStyle}
+      style={{
+        rotateX: tilt.rotateX,
+        rotateY: tilt.rotateY,
+        scale: tilt.scale,
+        transformPerspective: 1000,
+        transformStyle: "preserve-3d",
+        transform: "translateZ(0)",
+        willChange: "transform, opacity",
+      }}
       initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: config.animationDuration,
         ease: [0.23, 1, 0.32, 1],
       }}
-      layout
-      layoutId={`project-${item.id}`}
     >
       <div className="relative w-full h-52 rounded-lg overflow-hidden mb-4">
-        <OptimizedCardImage
+        {!isLoaded && <div className={PLACEHOLDER_STYLE} />}
+        <Image
           src={item.image}
           alt={item.title}
-          isLoaded={isLoaded}
+          fill
+          sizes={IMAGE_SIZES}
+          className={`object-cover rounded-lg transition-opacity duration-700 ease-in-out ${isLoaded ? "opacity-100" : "opacity-0"}`}
           onLoad={handleImageLoad}
+          loading="lazy"
         />
       </div>
-      <CardContent
-        title={item.title}
-        description={item.description}
-        stack={item.stack}
-        animationDuration={config.animationDuration}
-      />
+      <div>
+        <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+        <p className="text-sm text-slate-300 mb-4">{item.description}</p>
+        <div className="flex flex-wrap gap-2">
+          {item.stack.map((tech) => (
+            <span
+              key={tech}
+              className="bg-white/10 text-xs px-3 py-1 rounded-full text-white border border-white/20"
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+      </div>
     </motion.div>
   );
 });
-
 OptimizedProjectCard.displayName = "OptimizedProjectCard";
 
 export default OptimizedProjectCard;

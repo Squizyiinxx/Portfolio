@@ -2,8 +2,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
-
-// Dynamic import untuk client-side only
 const HeroCanvas = dynamic(() => import("./heroCanvas/HeroCanvas"), {
   ssr: false,
 });
@@ -27,7 +25,7 @@ const ContentHero: React.FC = () => {
           return () => clearTimeout(timer);
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.3 }
     );
 
     observer.observe(el);

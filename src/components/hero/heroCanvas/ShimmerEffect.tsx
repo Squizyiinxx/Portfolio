@@ -4,7 +4,6 @@ interface ShimmerEffectProps {
   canvasSize: number;
   intensity: number;
 }
-
 export default function ShimmerEffect({
   canvasSize,
   intensity,
@@ -20,16 +19,12 @@ export default function ShimmerEffect({
       height: `${canvasSize}px`,
       opacity: intensity,
       transition: "opacity 0.4s ease",
-      transform: "translateZ(0)",
-      willChange: "transform",
     }),
     [canvasSize, intensity]
   );
-
-  // Memoize canvas className untuk optimasi
   const canvasClassName = useMemo(
     () =>
-      "absolute pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform-gpu",
+      "absolute pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 optimizing-transition",
     []
   );
 
