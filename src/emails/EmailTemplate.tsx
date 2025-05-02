@@ -4,7 +4,6 @@ import {
   Container,
   Head,
   Heading,
-  Hr,
   Html,
   Img,
   Preview,
@@ -20,7 +19,7 @@ interface EmailTemplateProps {
   ip: string;
 }
 
-export const YelpRecentLoginEmail = ({
+export const EmailTemplate = ({
   name,
   email,
   message,
@@ -37,16 +36,14 @@ export const YelpRecentLoginEmail = ({
       <Body style={main}>
         <Preview>Form Contact</Preview>
         <Container>
-          <Section style={logo}>
+          <Section style={content}>
             <Img
-              width={80}
-              height={80}
+              width={45}
+              height={45}
               src={`${process.env.NEXT_PUBLIC_BASE_URL}/logo-email.jpg`}
               alt="Squizyiinxx logo"
+              className="absolute top-5 left-5 z-10"
             />
-          </Section>
-
-          <Section style={content}>
             <Row>
               <Img
                 style={image}
@@ -101,7 +98,6 @@ export const YelpRecentLoginEmail = ({
                   {ip}
                 </Text>
                 <Text style={paragraph}>Message: </Text>
-                <Hr style={hr} />
                 <Text style={paragraph}>{message}</Text>
               </Column>
             </Row>
@@ -115,7 +111,7 @@ export const YelpRecentLoginEmail = ({
             }}
           >
             {new Date().getFullYear()} | Squizyiinxx Inc., Jl. Pandeglang,
-            Serang, Banten, Indonesia | www.squizyiinxx.vercel.app
+            Serang, Banten, Indonesia | squizyiinxx.vercel.app
           </Text>
         </Container>
       </Body>
@@ -123,17 +119,12 @@ export const YelpRecentLoginEmail = ({
   );
 };
 
-export default YelpRecentLoginEmail;
+export default EmailTemplate;
 
 const main = {
   backgroundColor: "#fff",
   fontFamily:
     '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
-};
-const hr = {
-  borderColor: "#e6ebf1",
-  margin: "20px 0",
-  width: "100%",
 };
 
 const paragraph = {
@@ -141,12 +132,6 @@ const paragraph = {
   lineHight: 25,
   color: "#525f7f",
   textAlign: "justify" as const,
-};
-
-const logo = {
-  padding: "30px 20px",
-  display:"flex",
-  alignItems:"center",
 };
 
 const content = {

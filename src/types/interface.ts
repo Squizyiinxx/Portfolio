@@ -44,12 +44,13 @@ interface HeaderProps {
 }
 
  interface DeviceCapabilitiesStore {
-  capabilities: DeviceCapabilities;
-  hasDetected: boolean;
-  setCapabilities: (capabilities: DeviceCapabilities) => void;
-  setHasDetected: (val: boolean) => void;
-  detectCapabilities: (options?: Options) => Promise<DeviceCapabilities>;
-  getOptimalParticleCount: (maxCount?: number) => number;
-}
+   capabilities: DeviceCapabilities;
+   hasDetected: boolean;
+   setCapabilities: (capabilities: DeviceCapabilities) => void;
+   setHasDetected: (val: boolean) => void;
+   detectCapabilities: (options?: Options) => Promise<DeviceCapabilities>;
+   getOptimalParticleCount: (maxCount?: number) => number;
+   shouldReduceEffects: () => boolean;
+ }
 
 export type { IconProps, ItemProjects, LayerProps, CinematicImageProps,HeaderProps,DeviceCapabilitiesStore,DeviceCapabilities };

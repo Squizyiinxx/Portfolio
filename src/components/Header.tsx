@@ -5,11 +5,9 @@ import Image from "next/image";
 import { m } from "framer-motion";
 import {
   menuVariants,
-  overlayVariants,
 } from "@/components/transitions/Variants";
 import {
   headerMotionProps,
-  logoHoverEffect,
   logoMotionProps,
 } from "@/components/transitions/variantHeader";
 import { usePanel } from "@/hooks/usePanel";

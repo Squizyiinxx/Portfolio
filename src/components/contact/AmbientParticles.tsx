@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, memo, useMemo } from "react";
+import { useEffect, useRef, memo, useMemo, useCallback } from "react";
 import {
   LazyMotion,
   domAnimation,
@@ -9,6 +9,7 @@ import {
   useMotionValue,
 } from "framer-motion";
 import { useDeviceCapabilitiesStore } from "@/store/DeviceCapabilities";
+import { useIdleCallback } from "@/hooks/useIdleCallback";
 
 interface Particle {
   x: number;
@@ -23,51 +24,40 @@ class ParticleEngine {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private particles: Particle[] = [];
-  private dpr: number;
   private width = 0;
   private height = 0;
+  private dpr = window.devicePixelRatio || 1;
+  private frameTimestamps: number[] = [];
+  private readonly maxSamples = 60;
   private animId: number | null = null;
   private resizeObserver: ResizeObserver;
-  private targetParticleCount: number;
-  private frameTimes: number[] = [];
-  private readonly maxFrameSamples = 30;
   private tier: "low" | "medium" | "high";
+  private targetCount: number;
+  private minCount = 10;
 
   constructor(
     canvas: HTMLCanvasElement,
-    initialParticleCount: number,
+    count: number,
     tier: "low" | "medium" | "high"
   ) {
     this.canvas = canvas;
-    const ctx = canvas.getContext("2d", { alpha: true, willReadFrequently: true });
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) throw new Error("Canvas context unavailable");
     this.ctx = ctx;
-
-    this.dpr = window.devicePixelRatio || 1;
-    this.targetParticleCount = initialParticleCount;
     this.tier = tier;
+    this.targetCount = count;
 
     this.resizeObserver = new ResizeObserver(() => this.resize());
-    this.resizeObserver.observe(this.canvas.parentElement || document.body);
+    this.resizeObserver.observe(canvas.parentElement || document.body);
 
     this.resize();
     this.animate();
   }
 
-  private createParticle(): Particle {
-    return {
-      x: Math.random() * this.width,
-      y: Math.random() * this.height,
-      r: 1.5 + Math.random() * 1.5,
-      dx: (Math.random() - 0.5) * 0.2,
-      dy: (Math.random() - 0.5) * 0.2,
-      color: `hsla(${Math.random() * 360}, 80%, 70%, 0.5)`,
-    };
-  }
-
   private resize() {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+
     this.canvas.width = this.width * this.dpr;
     this.canvas.height = this.height * this.dpr;
     this.canvas.style.width = `${this.width}px`;
@@ -75,85 +65,77 @@ class ParticleEngine {
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     this.ctx.scale(this.dpr, this.dpr);
 
-    this.particles = Array.from({ length: this.targetParticleCount }, () =>
+    this.particles = Array.from({ length: this.targetCount }, () =>
       this.createParticle()
     );
   }
 
-  private adjustParticlesBasedOnFPS(averageFPS: number) {
-    const optimal = this.targetParticleCount;
-    const tier = this.tier;
+  private createParticle(): Particle {
+    return {
+      x: Math.random() * this.width,
+      y: Math.random() * this.height,
+      r: 1.5 + Math.random() * 1.5,
+      dx: (Math.random() - 0.5) * 0.25,
+      dy: (Math.random() - 0.5) * 0.25,
+      color: `hsla(${Math.random() * 360}, 80%, 70%, 0.5)`,
+    };
+  }
 
-    let minFPS = 50;
-    let maxFPS = 58;
-    if (tier === "low") {
-      minFPS = 55;
-      maxFPS = 60;
-    } else if (tier === "medium") {
-      minFPS = 50;
-      maxFPS = 58;
-    } else {
-      minFPS = 45;
-      maxFPS = 55;
+  private calculateFPS(now: number): number {
+    this.frameTimestamps.push(now);
+    if (this.frameTimestamps.length > this.maxSamples) {
+      this.frameTimestamps.shift();
     }
+    const frames = this.frameTimestamps.length;
+    const elapsed = this.frameTimestamps[frames - 1] - this.frameTimestamps[0];
+    return frames > 1 ? (1000 * (frames - 1)) / elapsed : 60;
+  }
 
-    if (averageFPS < minFPS && this.particles.length > 10) {
+  private adjustParticleCount(fps: number) {
+    const thresholds = {
+      low: { min: 55, max: 60 },
+      medium: { min: 50, max: 58 },
+      high: { min: 45, max: 55 },
+    }[this.tier];
+
+    if (fps < thresholds.min && this.particles.length > this.minCount) {
+      const reduceBy = Math.max(1, Math.floor(this.particles.length * 0.1));
       this.particles.length = Math.max(
-        10,
-        Math.floor(this.particles.length * 0.8)
+        this.minCount,
+        this.particles.length - reduceBy
       );
-    } else if (averageFPS > maxFPS && this.particles.length < optimal) {
+    } else if (
+      fps > thresholds.max &&
+      this.particles.length < this.targetCount
+    ) {
+      const add = Math.min(10, this.targetCount - this.particles.length);
       this.particles.push(
-        ...Array.from({ length: 5 }, () => this.createParticle())
+        ...Array.from({ length: add }, () => this.createParticle())
       );
     }
   }
 
-  private animate = (timestamp?: number) => {
-    const { ctx, width, height, particles } = this;
+  private animate = (now: number = performance.now()) => {
+    const { ctx, width, height } = this;
     ctx.clearRect(0, 0, width, height);
-    for (const p of particles) {
+
+    for (const p of this.particles) {
+      p.x += p.dx;
+      p.y += p.dy;
+
+      if (p.x < 0 || p.x > width) p.dx *= -1;
+      if (p.y < 0 || p.y > height) p.dy *= -1;
+
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fillStyle = p.color;
       ctx.shadowColor = p.color;
       ctx.shadowBlur = 6;
       ctx.fill();
-
-      p.x += p.dx;
-      p.y += p.dy;
-
-      if (p.x < 0 || p.x > width) p.dx *= -1;
-      if (p.y < 0 || p.y > height) p.dy *= -1;
     }
 
-    const now = typeof timestamp === "number" ? timestamp : performance.now();
-    if (this.frameTimes.length > 0) {
-      const delta = now - this.frameTimes[this.frameTimes.length - 1];
-      const fps = 1000 / delta;
-      if (
-        process.env.NODE_ENV !== "production" &&
-        this.frameTimes.length % 60 === 0
-      ) {
-        console.debug(
-          `[Particles] Frame: ${
-            this.frameTimes.length
-          }, Timestamp: ${now.toFixed(2)}, FPS: ${fps.toFixed(2)}`
-        );
-      }
-      this.frameTimes.push(now);
-
-      if (this.frameTimes.length > this.maxFrameSamples) {
-        this.frameTimes.shift();
-        const avgFPS =
-          1000 /
-          ((this.frameTimes[this.frameTimes.length - 1] - this.frameTimes[0]) /
-            this.frameTimes.length);
-        this.adjustParticlesBasedOnFPS(avgFPS);
-      }
-    } else {
-      this.frameTimes.push(now);
-    }
+    const fps = this.calculateFPS(now);
+    this.adjustParticleCount(fps);
 
     this.animId = requestAnimationFrame(this.animate);
   };
@@ -179,39 +161,39 @@ const AmbientParticles = () => {
   const getOptimalParticleCount = useDeviceCapabilitiesStore(
     (s) => s.getOptimalParticleCount
   );
-  const optimalParticleCount = useMemo(() => {
-    return getOptimalParticleCount(120); 
-  }, [getOptimalParticleCount, tier]);
+  const count = useMemo(
+    () => getOptimalParticleCount(120),
+    [getOptimalParticleCount]
+  );
 
-  useEffect(() => {
+  const idleCallbackHandler = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    engineRef.current = new ParticleEngine(canvas, optimalParticleCount, tier);
+    engineRef.current = new ParticleEngine(canvas, count, tier);
 
     controls.start({
       opacity: 1,
       transition: { duration: 1.2, ease: "easeOut" },
     });
 
-    return () => {
-      engineRef.current?.destroy();
-    };
-  }, [controls, optimalParticleCount, tier]);
+    return () => engineRef.current?.destroy();
+  }, [count, tier, controls]);
+
+  useIdleCallback(idleCallbackHandler, { timeout: 1500 });
 
   useEffect(() => {
-    let rafId: number | null = null;
-    const handleMouseMove = (e: MouseEvent) => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
+    let raf: number | null = null;
+    const onMouse = (e: MouseEvent) => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
         x.set((e.clientX / window.innerWidth - 0.5) * 15);
         y.set((e.clientY / window.innerHeight - 0.5) * 15);
       });
     };
-    window.addEventListener("mousemove", handleMouseMove);
-
+    window.addEventListener("mousemove", onMouse);
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener("mousemove", onMouse);
+      if (raf) cancelAnimationFrame(raf);
     };
   }, [x, y]);
 

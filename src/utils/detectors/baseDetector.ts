@@ -55,5 +55,6 @@ export function runBaseDetection(): DeviceCapabilities {
     isMobile,
     connection,
     batteryStatus: null,
+    fps: 60,
   };
 }

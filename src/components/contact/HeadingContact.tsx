@@ -11,15 +11,17 @@ import {
   useTransform,
   animate,
 } from "framer-motion";
+
 import useIntersectionObserver from "@/hooks/useIntersectionObserver";
-import {
-  containerVariants,
-  paragraphVariants,
-} from "../transitions/Variants";
+import { useDeviceCapabilitiesStore } from "@/store/DeviceCapabilities";
+import { containerVariants, paragraphVariants } from "../transitions/Variants";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+
 
 const HeadingContact: React.FC = () => {
   const controls = useAnimation();
   const ref = useRef<HTMLDivElement>(null);
+
   const isInView = useIntersectionObserver(ref, {
     threshold: 0.5,
     freezeOnceVisible: true,
@@ -30,23 +32,32 @@ const HeadingContact: React.FC = () => {
     stiffness: 80,
     damping: 15,
   });
-  const textShadow = useTransform(
-    springShadow,
-    (v) => `0 0 ${v}px rgba(255,255,0,${Math.min(v / 8, 0.8)})`
-  );
 
+  const shouldReduceEffects = useDeviceCapabilitiesStore((s) =>
+    s.shouldReduceEffects?.()
+  );
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const finalReduceEffects = shouldReduceEffects || prefersReducedMotion;
+
+  const textShadow = useTransform(springShadow, (v) =>
+    finalReduceEffects
+      ? "none"
+      : `0 0 ${v}px rgba(255,255,0,${Math.min(v / 8, 0.8)})`
+  );
   useEffect(() => {
     let animation: ReturnType<typeof animate> | undefined;
 
     if (isInView) {
       controls.start("visible");
 
-      animation = animate(shadowIntensity, [0, 8, 0], {
-        duration: 1.5,
-        ease: "easeInOut",
-        repeat: Infinity,
-        repeatType: "loop",
-      });
+      if (!finalReduceEffects) {
+        animation = animate(shadowIntensity, [0, 8, 0], {
+          duration: 1.5,
+          ease: "easeInOut",
+          repeat: Infinity,
+          repeatType: "loop",
+        });
+      }
     } else {
       controls.start("hidden");
       animation?.stop();
@@ -55,7 +66,7 @@ const HeadingContact: React.FC = () => {
     return () => {
       animation?.stop();
     };
-  }, [isInView, controls, shadowIntensity]);
+  }, [isInView, controls, shadowIntensity, finalReduceEffects]);
 
   return (
     <LazyMotion features={domAnimation} strict>

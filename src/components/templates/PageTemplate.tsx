@@ -1,17 +1,32 @@
 "use client";
 
-import React, { useRef, useState, useMemo, useCallback } from "react";
+import React, {
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { m, useMotionValue } from "framer-motion";
 import dynamic from "next/dynamic";
-import {useAdaptiveMousePosition,useCleanup,useParallaxControls,useIdleCallback,useIntersectionObserver } from "@/hooks"
+import {
+  useAdaptiveMousePosition,
+  useCleanup,
+  useParallaxControls,
+  useIdleCallback,
+  useIntersectionObserver,
+} from "@/hooks";
 import { throttle } from "@/utils/throttleDebounce";
 import ScrollContainer from "../ScrollContainer";
 import { sectionVariant } from "../transitions/Variants";
 import { useDeviceCapabilitiesStore } from "@/store/DeviceCapabilities";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 const CinematicBackgroundLayer = dynamic(
   () => import("@/components/CinematicBackgroundLayer"),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => <div className="w-full h-full bg-black/30" />,
+  }
 );
 
 export interface PageTemplateProps {
@@ -30,30 +45,47 @@ const PageTemplate: React.FC<PageTemplateProps> = React.memo(
     const [isLoaded, setIsLoaded] = useState(false);
     const scrollY = useMotionValue(0);
     const zeroMotion = useMotionValue(0);
+    const prefersReducedMotion = usePrefersReducedMotion();
     const { x: mouseX, y: mouseY } = useAdaptiveMousePosition();
-    const parallax = useParallaxControls({
-      mouseX: isLoaded ? mouseX : zeroMotion,
-      mouseY: isLoaded ? mouseY : zeroMotion,
-      scrollYProgress: isLoaded ? scrollY : undefined,
-    });
-    const tier = useDeviceCapabilitiesStore((s) => s.capabilities?.tier || "medium");
+
+    const tier = useDeviceCapabilitiesStore(
+      (s) => s.capabilities?.tier || "medium"
+    );
     const blurStyle = useMemo(() => {
       return tier === "low"
         ? "blur(2px)"
         : tier === "medium"
-        ? "blur(6px)"
-        : "blur(12px)";
+          ? "blur(6px)"
+          : "blur(12px)";
     }, [tier]);
+
     const isInView = useIntersectionObserver(sectionRef, {
       threshold: 0.2,
       rootMargin: "200px",
       freezeOnceVisible: true,
     });
+
+    const parallax = useParallaxControls({
+     mouseX: prefersReducedMotion || !isLoaded ? zeroMotion : mouseX,
+      mouseY: prefersReducedMotion
+        ? zeroMotion
+        : isLoaded
+          ? mouseY
+          : zeroMotion,
+      scrollYProgress: prefersReducedMotion
+        ? undefined
+        : isLoaded
+          ? scrollY
+          : undefined,
+    });
+
     useCleanup({
       motionValues: [scrollY],
       onCustomCleanup: () => parallax.cleanup?.(),
     });
+
     useIdleCallback(() => setIsLoaded(true), { timeout: 300 }, []);
+
     const throttledSetScroll = useMemo(
       () =>
         throttle(
@@ -62,10 +94,11 @@ const PageTemplate: React.FC<PageTemplateProps> = React.memo(
               scrollY.set(args[0]);
             }
           },
-          tier === "low" ? 100 : 50
+          tier === "low" ? 90 : 50
         ),
       [scrollY, tier]
     );
+
     const handleScrollProgress = useCallback(
       (v: number) => throttledSetScroll(v),
       [throttledSetScroll]

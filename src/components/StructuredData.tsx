@@ -19,43 +19,40 @@ export function StructuredData() {
           url: "https://squizyiinxx.vercel.app",
         },
         description:
-          "FullStack Developer in React, Next.js, Laravel, Vue.js, Nuxt.js, Node.js, and PHP with 3+ years experience",
+          "Official portfolio website of Squizyiinxx, a FullStack Developer in modern web development with 3+ years experience. Portfolio showcasing responsive UI, animations, and web performance optimization.",
       },
       {
         "@type": "WebSite",
         "@id": "https://squizyiinxx.vercel.app/#website",
         url: "https://squizyiinxx.vercel.app",
         name: "Squizyiinxx | FullStack Developer Expert",
-        publisher: {
-          "@id": "https://yourportfolio.com/#person",
-        },
+        publisher: { "@id": "https://squizyiinxx.vercel.app/#person" },
         description:
-          "Official portfolio website of Squizyiinxx, a professional FullStack developer expert.",
+          "Official portfolio website of Squizyiinxx, a FullStack Developer in modern web development with 3+ years experience.",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: "https://squizyiinxx.vercel.app/?q={search_term_string}",
+          "query-input": "required name=search_term_string",
+        },
       },
       {
-        "@type": "BreadcrumbList",
-        "@id": "https://squizyiinxx.vercel.app/#breadcrumb",
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Home",
-            item: "https://squizyiinxx.vercel.app",
-          },
-        ],
-      },
-      {
-        "@type": "CreativeWork",
-        "@id": "https://squizyiinxx.vercel.app/portfolio/project-awesome",
-        name: "Awesome FullStack Project",
-        url: "https://squizyiinxx.vercel.app/portfolio/project-awesome",
+        "@type": "WebPage",
+        "@id": "https://squizyiinxx.vercel.app/#webpage",
+        url: "https://squizyiinxx.vercel.app",
+        name: "Squizyiinxx | FullStack Developer",
         description:
-          "A FullStack project showcasing modern web development, including UI/UX, responsiveness, and web performance.",
-        datePublished: "2025-04-29",
-        author: {
-          "@id": "https://squizyiinxx.vercel.app/#person",
+          "Portfolio website of Squizyiinxx, showcasing work as a FullStack Developer in modern web development, UI/UX, and performance optimization.",
+        headline: "Squizyiinxx | FullStack Developer Portfolio",
+        inLanguage: "en",
+        isPartOf: { "@id": "https://squizyiinxx.vercel.app/#website" },
+        primaryImageOfPage: {
+          "@type": "ImageObject",
+          url: "https://squizyiinxx.vercel.app/profile.webp",
         },
-        image: "https://squizyiinxx.vercel.app/profile.webp",
+        author: { "@id": "https://squizyiinxx.vercel.app/#person" },
+        creator: { "@id": "https://squizyiinxx.vercel.app/#person" },
+        mainEntityOfPage: "https://squizyiinxx.vercel.app",
+        datePublished: "2025-05-01",
       },
     ],
   };

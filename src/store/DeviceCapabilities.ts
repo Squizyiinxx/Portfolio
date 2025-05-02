@@ -30,6 +30,7 @@ export const defaultCapabilities: DeviceCapabilities = {
     level: 1,
   },
   lastUpdated: null,
+  fps: 60,
 };
 let debounceTimer: NodeJS.Timeout | null = null;
 
@@ -41,7 +42,9 @@ export const useDeviceCapabilitiesStore = create<DeviceCapabilitiesStore>()(
       setCapabilities: (cap) => set({ capabilities: cap }),
       setHasDetected: (val: boolean) => set({ hasDetected: val }),
 
-      detectCapabilities: async ({ force = false }:{ force?: boolean} = {}) => {
+      detectCapabilities: async ({
+        force = false,
+      }: { force?: boolean } = {}) => {
         const now = Date.now();
         const { capabilities } = get();
         const isExpired =
@@ -51,11 +54,16 @@ export const useDeviceCapabilitiesStore = create<DeviceCapabilitiesStore>()(
 
         if (debounceTimer) clearTimeout(debounceTimer);
 
-        return new Promise((resolve) => { 
+        return new Promise((resolve) => {
           debounceTimer = setTimeout(async () => {
             try {
-              const detected = await detectCapabilities(); 
-              const updated = { ...detected, lastUpdated: Date.now() };
+              const detected = await detectCapabilities();
+              const fps = await calculateFPS(); 
+              const updated = {
+                ...detected,
+                lastUpdated: Date.now(),
+                fps,
+              };
 
               set({
                 capabilities: updated,
@@ -70,10 +78,20 @@ export const useDeviceCapabilitiesStore = create<DeviceCapabilitiesStore>()(
           }, 300);
         });
       },
+
       getOptimalParticleCount: (maxCount = 30) => {
         const { performanceScore } = get().capabilities;
         const min = Math.max(3, Math.floor(maxCount * 0.1));
         return Math.floor(min + (performanceScore / 100) * (maxCount - min));
+      },
+      shouldReduceEffects: () => {
+        const { performanceScore, isLowEndDevice, fps, connection } = get().capabilities;
+        return (
+          performanceScore < 50 ||
+          isLowEndDevice === true ||
+          fps < 30 ||
+          connection?.saveData === true
+        );
       },
     }),
     {
@@ -85,3 +103,31 @@ export const useDeviceCapabilitiesStore = create<DeviceCapabilitiesStore>()(
     }
   )
 );
+
+const calculateFPS = (): Promise<number> => {
+  if (
+    typeof window === "undefined" ||
+    typeof requestAnimationFrame === "undefined"
+  ) {
+    return Promise.resolve(60);
+  }
+
+  return new Promise((resolve) => {
+    let frameCount = 0;
+    const start = performance.now();
+
+    const frame = () => {
+      frameCount++;
+      const now = performance.now();
+
+      if (now - start >= 1000) {
+        resolve(frameCount);
+      } else {
+        requestAnimationFrame(frame);
+      }
+    };
+
+    requestAnimationFrame(frame);
+  });
+};
+

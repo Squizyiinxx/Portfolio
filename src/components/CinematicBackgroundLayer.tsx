@@ -1,15 +1,14 @@
-// src/components/CinematicBackgroundLayerComponent.tsx
 "use client";
 
 import { motion, MotionValue, useTransform, MotionStyle } from "framer-motion";
-import CinematicImageLayer from "./CinematicImageLayer";
 import { memo, useMemo } from "react";
+import CinematicImageLayer from "./CinematicImageLayer";
 
 interface Props {
   bgSrc: string;
   bgAlt: string;
   bgY: MotionValue<number>;
-  blurY: MotionValue<number>;
+  blurY: MotionValue<number>; // Reserved for future, or optional background blur motion
   flickerOpacity: MotionValue<number>;
   lightOpacity: MotionValue<number>;
   lightScale: MotionValue<number>;
@@ -17,11 +16,10 @@ interface Props {
   lightY: MotionValue<number>;
   zIndexBg?: number;
   blurDataURL?: string;
-  zIndexCloud?: number;
   blurStyle?: string;
 }
 
-function CinematicBackgroundLayerComponent({
+function CinematicBackgroundLayer({
   bgSrc,
   bgAlt,
   bgY,
@@ -65,6 +63,7 @@ function CinematicBackgroundLayerComponent({
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
       <div className="absolute inset-0 bg-black -z-10" />
+
       <CinematicImageLayer
         src={bgSrc}
         alt={bgAlt}
@@ -73,14 +72,19 @@ function CinematicBackgroundLayerComponent({
         zIndex={zIndexBg}
         blurDataURL={blurDataURL}
       />
-      <motion.div
-        className="absolute inset-0 bg-black/60 backdrop-blur-md z-[9999]"
-        style={backdropStyle}
-      />
+
+      {blurStyle && (
+        <motion.div
+          className="absolute inset-0 z-[9999] backdrop-blur-md bg-black/60"
+          style={backdropStyle}
+        />
+      )}
+
       <motion.div
         className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent mix-blend-overlay z-[999]"
         style={flickerStyle}
       />
+
       <motion.div
         className="absolute inset-0 bg-gradient-to-br from-amber-100/10 via-white/5 to-transparent mix-blend-overlay z-[999]"
         style={lightStyle}
@@ -89,7 +93,7 @@ function CinematicBackgroundLayerComponent({
   );
 }
 
-function arePropsEqual(prev: Props, next: Props) {
+const areEqual = (prev: Props, next: Props) => {
   return (
     prev.bgSrc === next.bgSrc &&
     prev.bgAlt === next.bgAlt &&
@@ -101,8 +105,9 @@ function arePropsEqual(prev: Props, next: Props) {
     prev.lightX === next.lightX &&
     prev.lightY === next.lightY &&
     prev.zIndexBg === next.zIndexBg &&
-    prev.zIndexCloud === next.zIndexCloud
+    prev.blurDataURL === next.blurDataURL &&
+    prev.blurStyle === next.blurStyle
   );
-}
+};
 
-export default memo(CinematicBackgroundLayerComponent, arePropsEqual);
+export default memo(CinematicBackgroundLayer, areEqual);

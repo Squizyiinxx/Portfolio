@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     },
   },
   description:
-    "FullStack Developer in modern web development with 3+ years experience. Portfolio showcasing responsive UI, animations, and web performance optimization.",
+    "Official portfolio website of Squizyiinxx, a FullStack Developer in modern web development with 3+ years experience. Portfolio showcasing responsive UI, animations, and web performance optimization.",
   keywords: [
     "FullStack Developer",
     "Squizyiiinxx",

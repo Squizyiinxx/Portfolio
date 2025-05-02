@@ -4,7 +4,7 @@ import { blurDataContactSection } from "@/lib/blurData";
 import PageTemplate from "../../components/templates/PageTemplate";
 import ButtonCloseSection from "../../components/ButtonCloseSection";
 import Preload from "../../components/PreloadEffect";
-import { m } from "framer-motion";
+import { domAnimation, LazyMotion, m } from "framer-motion";
 
 const loadAmbientParticles = () =>
   import("@/components/contact/AmbientParticles");
@@ -24,7 +24,7 @@ const HeadingContact = dynamic(loadHeadingContact, {
 
 export default function ContactContent({ onClose }: { onClose: () => void }) {
   return (
-    <>
+    <LazyMotion features={domAnimation}>
       <Preload
         modules={[
           loadAmbientParticles,
@@ -66,6 +66,6 @@ export default function ContactContent({ onClose }: { onClose: () => void }) {
           <SocialMedia />
         </div>
       </PageTemplate>
-    </>
+    </LazyMotion>
   );
 }

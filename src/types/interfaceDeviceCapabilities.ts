@@ -45,6 +45,7 @@ interface DeviceCapabilities {
   connection: ConnectionInfo | null;
   batteryStatus: BatteryInfo | null;
   lastUpdated?: number | null;
+  fps: number;
 }
 
 interface DeviceCapabilitiesResult extends DeviceCapabilities {

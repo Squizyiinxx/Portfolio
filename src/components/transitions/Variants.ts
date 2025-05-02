@@ -24,12 +24,12 @@ export const buttonVariants = (): Variants => ({
     transition: { duration: getDuration(0.2), ease: "easeIn" },
   },
   hover: {
-    scale: getHasReducedMotion() ? 1 : 1.05,
+    scale: getHasReducedMotion() ? 1 : 1.02,
     transition: {
       type: "spring",
-      stiffness: 300,
-      damping: 10,
-      duration: getDuration(0.2),
+      stiffness: 250,
+      damping: 15,
+      duration: getDuration(0.3),
     },
   },
 });
@@ -59,9 +59,9 @@ export const sectionVariant: Variants = {
     filter: "blur(0px)",
     zIndex: 20,
     transition: {
-      x: { duration: 0.9, ease: [0.33, 1, 0.68, 1] },
-      opacity: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
-      filter: { duration: 0.6, ease: "easeOut" },
+      x: { duration: getDuration(0.9), ease: [0.33, 1, 0.68, 1] },
+      opacity: { duration: getDuration(0.5), ease: [0.4, 0, 0.2, 1] },
+      filter: { duration: getDuration(0.6), ease: "easeOut" },
       delayChildren: 0.2,
       staggerChildren: 0.1,
     },
@@ -104,14 +104,15 @@ export const panelVariants: Variants = {
 
 
 export const menuVariants: Variants = {
-  closed: { x: "100%", opacity: 0, scale: 0.98 },
+  closed: { x: "100%", opacity: 0, scale: 0.98,zIndex:0 },
   open: {
     x: 0,
     opacity: 1,
     scale: 1,
+    zIndex:20,
     transition: { type: "spring", stiffness: 260, damping: 24, duration: 0.45 },
   },
-  exit: { x: "100%", opacity: 0, scale: 0.98, transition: { duration: 0.25 } },
+  exit: { x: "100%", opacity: 0, scale: 0.98, zIndex:0, transition: { duration: 0.25 } },
 };
 
 export const overlayVariants: Variants = {
