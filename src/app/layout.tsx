@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "HhFYT3b42QOtEcYiYTjagHJXJtOIvzIu8glcKhRyrvQ",
+    google: "xwzam3SDIJt-0stHGZH_IDG1My6fs0ssD1UIib95Gh8",
   },
   category: "technology",
   applicationName: "Portfolio",
